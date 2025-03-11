@@ -7,9 +7,11 @@ https://github.com/hrnr/m-explore-extra
 roslaunch multirobot_map_merge from_map_server.launch map1:=PATH_TO_m-explore-extra/map_merge/gmapping_maps/2011-08-09-12-22-52.yaml map2:=PATH_TO_m-explore-extra/map_merge/gmapping_maps/2012-01-28-11-12-01.yaml rviz:=true
 -->
 <launch>
-  <arg name="map1" default="map1.yaml"/>
-  <arg name="map2" default="map2.yaml"/>
-  <arg name="rviz" default="false"/>
+  <!--<arg name="map1" default="/home/mingzhun/lab_localization/src/m-explore/map_merge/gmapping_maps/2012-01-28-11-12-01.yaml"/> -->
+  <!--<arg name="map2" default="/home/mingzhun/lab_localization/src/m-explore/map_merge/gmapping_maps/2011-08-09-12-22-52.yaml"/> -->
+  <arg name="map1" default="/home/mingzhun/lab_localization/src/navigation/amcl/amcl_data/maps/20250216_vive_mapping_20m_test3.yaml"/>
+  <arg name="map2" default="/home/mingzhun/lab_localization/src/navigation/amcl/amcl_data/maps/20241218_vive_mapping_test3.yaml"/>
+  <arg name="rviz" default="true"/>
 
   <include file="$(find multirobot_map_merge)/launch/map_merge.launch"/>
 
