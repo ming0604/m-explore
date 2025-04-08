@@ -39,6 +39,7 @@
 #include <combine_grids/merging_pipeline.h>
 #include <ros/assert.h>
 #include <ros/console.h>
+#include <opencv2/opencv.hpp>
 
 #include <opencv2/stitching/detail/matchers.hpp>
 #include <opencv2/stitching/detail/motion_estimators.hpp>
@@ -70,16 +71,46 @@ bool MergingPipeline::estimateTransforms(FeatureType feature_type,
   /* find features in images */
   ROS_DEBUG("computing features");
   image_features.reserve(images_.size());
+  int map_index = 1;
+  std::string save_dir = "/home/mingzhun/Pictures/map_merging_output_image/";
   for (const cv::Mat& image : images_) {
     image_features.emplace_back();
     if (!image.empty()) {
+
+      // show image before feature detection
+      std::string before_title = "Before computeImageFeatures (map " + std::to_string(map_index) + ")";
+      // flip image to show it in the same orientation as the ros type grid map
+      cv::Mat image_flipped;
+      //cv::flip(image, image_flipped, 0);
+      //cv::imshow(before_title, image_flipped);
+      cv::imshow(before_title, image);
+      //cv::waitKey(30);
+
+
 #if CV_VERSION_MAJOR >= 4
       cv::detail::computeImageFeatures(finder, image, image_features.back());
 #else
       (*finder)(image, image_features.back());
 #endif
+
+      // show image after feature detection
+      cv::Mat image_with_keypoints;
+      cv::Mat image_with_keypoints_flipped;
+      cv::drawKeypoints(image, image_features.back().keypoints, image_with_keypoints, cv::Scalar(0, 255, 0));
+      std::cout << "Number of features in map" << map_index << ": " << image_features.back().keypoints.size() << std::endl;
+      std::string after_title = "After computeImageFeatures (map " + std::to_string(map_index) + ")";
+      // flip image to show it in the same orientation as the ros type grid map
+      //cv::flip(image_with_keypoints, image_with_keypoints_flipped, 0);
+      //cv::imshow(after_title, image_with_keypoints_flipped);
+      cv::imshow(after_title, image_with_keypoints);
+      // store the image with keypoints
+      std::string image_with_keypoints_path = save_dir + "map_" + std::to_string(map_index) + "_in pkg" + "_features.png";
+      cv::imwrite(image_with_keypoints_path, image_with_keypoints);
+      cv::waitKey(5000);
     }
+    map_index++;
   }
+  cv::destroyAllWindows();
   finder = {};
 
   /* find corespondent features */
